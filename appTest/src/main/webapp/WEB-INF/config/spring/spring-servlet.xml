@@ -7,8 +7,9 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	<!-- 서블릿이 만든 애플리케이션 컨텍스트임(설정정보). 여기는 그 이외의 여러 파일을 빈으로 등록하기. -->
 	
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
 
@@ -21,6 +22,8 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
+	<!-- 애노테이션으로 등록한 것을 한번에 자동으로 올려줌. 요거는 빈 스캐너로 동작되면서 인식한 클래스를 빈으로 등록함! 
+	web.xml에서 봤던 AnnotationConfigApplicationContext를 이용해도 됨. 이걸 사용하면 xml은 필요없겠지?-->
 	<context:component-scan base-package="com.test.springbook" />
 	 <context:component-scan base-package="com.twogather.dao" />
 	

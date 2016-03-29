@@ -3,36 +3,82 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+	<!-- 이것을 설정 안하면 디폴트로 /WEB-INF/applicationContext.xml이 설정됨.
+	이것을 사용하는 이유는 루트 컨텍스트의 위치를 지정해줌 -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/config/spring/context-root.xml 
-		/WEB-INF/config/spring/context-datasource.xml </param-value>
-	</context-param> 
-
-     <context-param>
-        <param-name>ContextClass</param-name>
-        <param-value>
-        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
-        </param-value>
-    </context-param> 
-
-	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+		<param-value>
+		<!--직접 지정 
+		/WEB-INF/config/spring/context-root.xml 
+		/WEB-INF/config/spring/context-datasource.xml  -->
+		
+		<!-- WEB-INF 아래의 서브폴더의 context로 시작되는 xml을 찾으란 얘기 
+		/WEB-INF/*context-*.xml-->
+		
+		<!-- WEB-INF 아래의 모든 서브폴더의 context로 시작되는 xml을 찾으란 얘기 -->
+		/WEB-INF/**/*context-*.xml
+		</param-value>
+	</context-param>
+	
+	<!-- 루트 컨텍스트를 등록하는 방법이 서블릿의 이벤트 리스너를 이용하는 것. 
+	servletContextListener를 이용하여 주로 웹 애플리케이션 전체에 적용 가능한 
+	DB연결 기능이나 로깅 같은 서비스를 사용. 
+	이것을 이용해서 웹 애플리케이션이 시작될 때 root applicationContext를 만들어 초기화하고,
+	웹 애플리케이션이 종료될 때 컨텍스트를 함께 종료하는 기능을 가진 리스너를 만들 수 있다.
+	스프링은 이러한 기능을 가진 리스너인 ContextLoaderListener를 제공한다.-->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-	<!-- Processes application requests -->
+	<!-- 위에서 생성한 ContextLoaderListener는 기본적으로 애플리케이션컨텍스트를 생성할때 XmlWebApplicationContext로 생성한다.
+	이외에 다른 애플리케이션 컨텍스트 구현 클래스를 사용하고 싶을때 다음과 같이 ContextClass로 지정해주면 된다. 
+	아래 적은 AnnotationConfigWebApplicationContext 은 xml설정정보를 가져오는것 대신에 
+	소스코드내의 애노테이션 선언과 특별하게 만들어진 자바 코드를 설정메타정보로 활용하는 것이다. 
+	다음과 같이 쓰면 xml이 없어도 root ApplicationContext를 생성할 수 있다.
+	이걸 쓸때는 반드시 contextConfigLocation을 선언해야한다. 
+	즉, 이것은 자동으로 빈 스캐닝을 사용하는 것! 애노테이션인 것들을 쫙 부를수 있음.
+	 <context-param>
+        <param-name>ContextClass</param-name>
+        <param-value>
+        org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+        </param-value>
+    </context-param>
+    
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>part2.unit_01.dao</param-value>
+         만일 하나 이상의 스캔 대상 패키지를 갖고싶다면?
+        공백으로 구분해서 여러개의 패키지 경로를 적어주면 된다! 
+    </context-param> -->
+
+
+<!-- 스프링은 웹 기능을 지원하는 프론트 컨트롤러 서블릿(문지기)으로 DispatcherServlet을 사용한다.
+여기서 지정만 해주면 당연히 여러개를 두고 쓸수도 있다.
+얘는 서블릿이 초기화 될때 자신만의 컨텍스트를 생성하고 초기화한다. 동시에 웹 애플리케이션 레벨에 등록된
+root applicationContext를 찾아서 자신의 부모컨텍스트로 사용한다. 
+즉, 얘는 자식이 되는 셈!! 
+   -->
 	<servlet>
+	<!-- DispatcherServlet은 독립적인 네임스페이스를 갖는다! 
+	이름을 잘 적어주어야하는데, 
+	servlet name을 spring이라고 나는 적었다. 그러면 네임스페이스는 spring-servlet이 된다. 
+	이게 중요한 이유는 DipatcherServlet이 자신만의
+	context를 만든다고 했다. 컨텍스트를 만들때 이름을 네임스페이스를 사용해서 디폴트 값으로 넣어주기 때문!
+	즉, spring이면 네임스페이스는 spring-servlet이라고 했다.
+	그러면 디폴트xml의 위치는 /WEB-INF/spring-servlet.xml이 된다. 
+	물론, 위치와 이름을 잘 지정해주면 문제가 되진 않을것이다. -->
 		<servlet-name>spring</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
+		<!-- init-param을 통해서 위치지정함. -->
 			<param-name>contextConfigLocation</param-name>
 			<param-value>/WEB-INF/config/spring/spring-servlet.xml</param-value>
 		</init-param>
+		<!-- load-on-startup은 서블릿 컨테이너가 등록된 서블릿을 언제 만들고 초기화 할지, 또 그 순서는 어떻게 되는지를 정하는 정수값이다. 
+		작을수록 우선순위, 기본이 1 -->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-		
+
 	<servlet-mapping>
 		<servlet-name>spring</servlet-name>
 		<url-pattern>/</url-pattern>

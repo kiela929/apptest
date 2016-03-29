@@ -10,6 +10,10 @@ import com.twogather.dto.Member;
 
 
 @Repository
+/*
+ * repository는 데이터 액세스 계층의 DAO 또는 리포지토리 클래스에 사용한다.
+ * DataAccessException 자동변환과 같은 AOP 적용대상을 선정하기 위해서도 사용한다.
+ */
 //@SuppressWarnings("unchecked")
 public class UserDao {
 	@Autowired
@@ -38,7 +42,7 @@ public class UserDao {
 	public Member getMember(int num) throws SQLException{
 		Member member = new Member();
 	
-		member=(Member)sqlMapClientTemplate.queryForObject("findMemeberByNum",num);
+		member=(Member)sqlMapClientTemplate.queryForObject("Member.findMemeberByNum",num);
 	
 		
 		return member;

@@ -66,7 +66,7 @@
   		<groupId>org.springframework</groupId>
   		<artifactId>spring-orm</artifactId>
   		<version>${org.springframework-version}</version>
-  	<!-- 	<version>3.1.1.RELEASE</version> -->
+  	<!-- 	<version>3.1.1.RELEASE</version> 버전 안맞으면 오류남  -->
   	</dependency> 
 <!--  -->
 		<!-- Spring -->

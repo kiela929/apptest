@@ -23,8 +23,6 @@ public class HomeController extends GenericController<Member,Integer>{
 	private ApplicationContext context;
 	
 	
-	
-	
 	@RequestMapping("/main")
 	public String board(){
 		
@@ -66,10 +64,10 @@ public class HomeController extends GenericController<Member,Integer>{
 		return "home";
 	}
 	*/
-	@RequestMapping(value="/hello")
+/*	@RequestMapping(value="/hello")
 	public String test(){
 		return "hellospring";
 	}
-
+*/
 	
 }
